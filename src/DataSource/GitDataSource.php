@@ -1,8 +1,10 @@
 <?php
 
-namespace Deployer\Utils;
+namespace Deployer\DataSource;
 
-class Git
+use Deployer\Utils\Config;
+
+class GitDataSource implements DataSourceInterface
 {
     /**
      * @param string $sprint
@@ -15,7 +17,15 @@ class Git
     /**
      * @return array
      */
-    public function getCommits()
+    public function getFiles()
+    {
+        return $this->getFilesFromCommits();
+    }
+
+    /**
+     * @return array
+     */
+    protected function getCommits()
     {
         $result = shell_exec(sprintf('git --git-dir %s/.git log --all --grep="%s" --name-only', Config::getParam('workplace')['local'], $this->sprint));
 
@@ -25,7 +35,7 @@ class Git
     /**
      * @return array
      */
-    public function getFilesFromCommits()
+    protected function getFilesFromCommits()
     {
         $commits = $this->getCommits();
         $modifiedFiles = [];

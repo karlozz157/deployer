@@ -2,54 +2,47 @@
 
 namespace Deployer;
 
+use Deployer\DataSource\DataSource;
+use Deployer\DataSource\GitDataSource;
 use Deployer\Entity\File;
-use Deployer\Utils\Git;
-use Deployer\Utils\Sftp;
+use Deployer\Storage\Storage;
+use Deployer\Storage\StorageSftp;
 
 class Deployer
 {
     /**
-     * @var Git $git
+     * @var DataSource $dataSource
      */
-    protected $git;
+    protected $dataSource;
 
     /**
-     * @var Sftp $sftp
+     * @var Storage $storage
      */
-    protected $sftp;
+    protected $storage;
 
     public function __construct()
     {
-        $this->git  = new Git();
-        $this->sftp = new Sftp();
+        $this->dataSource = new DataSource(new GitDataSource());
+        $this->storage = new Storage(new StorageSftp());
     }
 
     public function deploy()
     {
-        $filesFromCommits = $this->git->getFilesFromCommits();
-        $errors  = [];
+        $files  = $this->dataSource->getFiles();
+        $errors = [];
 
-        foreach ($filesFromCommits as $fileFromCommits) {
+        foreach ($files as $file) {
             try {
-                $this->uploadFile($fileFromCommits);
+                $this->storage->upload(new File($file));
             } catch (\Exception $ex) {
-                $errors[] = ['file' => $fileFromCommits, 'reason' => $ex->getMessage()];
+                $errors[] = ['file' => $file, 'reason' => $ex->getMessage()];
             }
         }
 
-        echo sprintf('Archivos subidos: %d \n\n', abs(count($filesFromCommits) - count($errors)));
+        echo sprintf('Archivos subidos: %d \n\n', abs(count($files) - count($errors)));
 
         if ($errors) {
             echo sprintf('Errores encontrados: %s', json_encode($errors));
         }
-    }
-
-    /**
-     * @param string $filename
-     */
-    protected function uploadFile($filename)
-    {
-        $file = new File($filename);
-        $this->sftp->upload($file);
     }
 }

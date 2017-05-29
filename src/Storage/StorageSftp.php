@@ -1,11 +1,11 @@
 <?php
 
-namespace Deployer\Utils;
+namespace Deployer\Storage;
 
 use Deployer\Entity\File;
 use Deployer\Utils\Config;
 
-class SFTP
+class StorageSftp implements StorageInterface
 {
     /**
      * @const string
