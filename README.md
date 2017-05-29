@@ -4,4 +4,6 @@
 
 2- <code>configurar ./config/config.json</code>
 
-3- <code>php index.php</code>
+3- <code>composer install</code>
+
+4- <code>php index.php</code>
