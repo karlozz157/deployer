@@ -1,0 +1,13 @@
+{
+    "sprint": "",
+    "workplace": {
+        "local": "",
+        "remote": ""
+    },
+    "sftp": {
+        "hostname": "",
+        "username": "",
+        "password": "",
+        "port": ""
+    }
+}
